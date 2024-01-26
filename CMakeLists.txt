@@ -57,6 +57,7 @@ PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src/pd/deformable_mesh.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/pd/edge_length_constraint.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/pd/deformation_gradient_constraint.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/pd/corotated_deformation_gradient_constraint.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/pd/positional_constraint.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/pd/strain_constraint.cpp
 
@@ -76,6 +77,7 @@ PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include/pd/deformable_mesh.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/pd/edge_length_constraint.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/pd/deformation_gradient_constraint.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/pd/corotated_deformation_gradient_constraint.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/pd/positional_constraint.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/pd/solver.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/pd/strain_constraint.h
@@ -112,6 +114,7 @@ PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src/pd/deformable_mesh.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/pd/edge_length_constraint.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/pd/deformation_gradient_constraint.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/pd/corotated_deformation_gradient_constraint.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/pd/positional_constraint.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/pd/strain_constraint.cpp
 )

@@ -250,6 +250,19 @@ int main(int argc, char** argv)
                     ImGui::Checkbox("Active##DeformationGradient", &is_constraint_type_active[1]);
                     ImGui::TreePop();
                 }
+                if (ImGui::TreeNode("Corotated Deformation Gradient##Constraints"))
+                {
+                    ImGui::BulletText("Valid for tetrahedral models only");
+                    ImGui::InputFloat(
+                        "wi##CorotatedDeformationGradient",
+                        &physics_params.corotated_deformation_gradient_constraint_wi,
+                        10.f,
+                        100.f,
+                        "%.1f");
+                    ImGui::Checkbox(
+                        "Active##CorotatedDeformationGradient", &is_constraint_type_active[1]);
+                    ImGui::TreePop();
+                }
                 static float sigma_min = 0.99f;
                 static float sigma_max = 1.01f;
                 if (ImGui::TreeNode("Strain Limit##Constraints"))
@@ -301,6 +314,11 @@ int main(int argc, char** argv)
                             physics_params.deformation_gradient_constraint_wi);
                     }
                     if (is_constraint_type_active[2])
+                    {
+                        model.constrain_corotated_deformation_gradient(
+                            physics_params.corotated_deformation_gradient_constraint_wi);
+                    }
+                    if (is_constraint_type_active[3])
                     {
                         model.constrain_strain(
                             sigma_min,
