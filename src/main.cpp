@@ -260,7 +260,7 @@ int main(int argc, char** argv)
                         100.f,
                         "%.1f");
                     ImGui::Checkbox(
-                        "Active##CorotatedDeformationGradient", &is_constraint_type_active[1]);
+                        "Active##CorotatedDeformationGradient", &is_constraint_type_active[2]);
                     ImGui::TreePop();
                 }
                 static float sigma_min = 0.99f;
@@ -284,7 +284,7 @@ int main(int argc, char** argv)
                         &sigma_max,
                         0.01f,
                         0.1f);
-                    ImGui::Checkbox("Active##StrainLimit", &is_constraint_type_active[2]);
+                    ImGui::Checkbox("Active##StrainLimit", &is_constraint_type_active[3]);
                     ImGui::TreePop();
                 }
 
