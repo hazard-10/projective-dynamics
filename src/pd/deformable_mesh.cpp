@@ -139,7 +139,7 @@ void deformable_mesh_t::constrain_shape_targeting(scalar_type wi)
     for (auto i = 0u; i < elements.rows(); ++i)
     {
         auto const element = elements.row(i);
-        auto constraint    = std::make_unique<corotated_deformation_gradient_constraint_t>(
+        auto constraint    = std::make_unique<shape_targeting_constraint_t>(
             std::initializer_list<std::uint32_t>{
                 static_cast<std::uint32_t>(element(0)),
                 static_cast<std::uint32_t>(element(1)),
