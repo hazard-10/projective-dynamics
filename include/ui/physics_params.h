@@ -13,6 +13,7 @@ struct physics_params_t
     float positional_constraint_wi           = 1'000'000'000.f;
     float deformation_gradient_constraint_wi = 10'000'000.f;
     float corotated_deformation_gradient_constraint_wi = 10'000'000.f;
+    float shape_targeting_constraint_wi      = 10'000'000.f;
     float strain_limit_constraint_wi         = 10'000'000.f;
 };
 

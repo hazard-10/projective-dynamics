@@ -263,6 +263,18 @@ int main(int argc, char** argv)
                         "Active##CorotatedDeformationGradient", &is_constraint_type_active[2]);
                     ImGui::TreePop();
                 }
+                if (ImGui::TreeNode("Shape Targeting##Constraints"))
+                {
+                    ImGui::BulletText("Valid for tetrahedral models only");
+                    ImGui::InputFloat(
+                        "wi##ShapeTargeting", &physics_params.shape_targeting_constraint_wi, 10.f,
+                        100.f, "%.1f");
+                    ImGui::Checkbox("Active##ShapeTargeting", &is_constraint_type_active[3]);
+                    if (ImGui::Button("Set Shape Target", ImVec2((w - p) / 2.f, 0))) {
+                        // todo: set shape target
+                    }
+                    ImGui::TreePop();
+                }
                 static float sigma_min = 0.99f;
                 static float sigma_max = 1.01f;
                 if (ImGui::TreeNode("Strain Limit##Constraints"))
@@ -319,6 +331,10 @@ int main(int argc, char** argv)
                             physics_params.corotated_deformation_gradient_constraint_wi);
                     }
                     if (is_constraint_type_active[3])
+                    {
+                        model.constrain_shape_targeting(physics_params.shape_targeting_constraint_wi);
+                    }
+                    if (is_constraint_type_active[4])
                     {
                         model.constrain_strain(
                             sigma_min,

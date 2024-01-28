@@ -98,6 +98,7 @@ class deformable_mesh_t
     void add_positional_constraint(int vi, scalar_type wi = 1'000'000'000.);
     void constrain_deformation_gradient(scalar_type wi = 1'000'000.);
     void constrain_corotated_deformation_gradient(scalar_type wi = 1'000'000.);
+    void constrain_shape_targeting(scalar_type wi = 1'000'000.);
     void constrain_strain(scalar_type min, scalar_type max, scalar_type wi = 1'000'000.);
 
   protected:
