@@ -64,7 +64,7 @@ corotated_deformation_gradient_constraint_t::evaluate(positions_type const& p, m
         (is_V_positive && !is_V0_positive) || (!is_V_positive && is_V0_positive);
 
     Eigen::Matrix3d const F = Ds * DmInv_;
-    Eigen::Matrix3d const I = Eigen::Matrix3d::Identity();
+    // Eigen::Matrix3d const I = Eigen::Matrix3d::Identity();
 
     // Perform polar decomposition on F to find R and S (F = R * S)
     Eigen::JacobiSVD<Eigen::Matrix3d> svd(F, Eigen::ComputeFullU | Eigen::ComputeFullV);
@@ -72,19 +72,18 @@ corotated_deformation_gradient_constraint_t::evaluate(positions_type const& p, m
     if (R_.determinant() < 0) {
         R_.col(2) *= -1; // Ensure that R is a proper rotation
     }
-    Eigen::Matrix3d const S = R_.transpose() * F;
+    // Eigen::Matrix3d const S = R_.transpose() * F;
 
-    // Compute strain energy density using the corotated model
-    Eigen::Matrix3d const E = 0.5 * (S.transpose() + S) - I;
+    // Compute strain so energy density using the corotated model
+    // Eigen::Matrix3d const E = 0.5 * (S.transpose() + S) - I;
 
     scalar_type const young_modulus = 1'000'000'000.;
     scalar_type const poisson_ratio = 0.45;
     scalar_type const mu            = (young_modulus) / (2. * (1 + poisson_ratio));
-    scalar_type const lambda =
-        (young_modulus * poisson_ratio) / ((1 + poisson_ratio) * (1 - 2 * poisson_ratio));
-    scalar_type const Etrace = E.trace();
-    scalar_type const psi = mu * (E.array() * E.array()).sum() + 0.5 * lambda * Etrace * Etrace;
-
+    // scalar_type const lambda =
+        // (young_modulus * poisson_ratio) / ((1 + poisson_ratio) * (1 - 2 * poisson_ratio));
+    scalar_type const frob_norm = ( F - R_ ).norm();
+    scalar_type const psi = mu * frob_norm * frob_norm; // take the simple model for now
     scalar_type const V0 = std::abs(V0_);
     scalar_type const C = V0 * psi;
 
@@ -116,14 +115,7 @@ void corotated_deformation_gradient_constraint_t::project_wi_SiT_AiT_Bi_pi(
     Ds.col(1) = q2 - q4;
     Ds.col(2) = q3 - q4;
 
-    Eigen::Matrix3d const F = Ds * DmInv_;
-    // scalar_type const Vol     = (1. / 6.) * Ds.determinant();
-    // bool const is_V_positive  = Vol >= scalar_type{0.};
-    // bool const is_V0_positive = V0_ >= scalar_type{0.};
-
-    // TODO: tet inversion handling?
-    // bool const is_tet_inverted =
-    //    (is_V_positive && !is_V0_positive) || (!is_V_positive && is_V0_positive);
+    Eigen::Matrix3d const F = Ds * DmInv_; 
 
     Eigen::JacobiSVD<Eigen::Matrix3d> SVD(F, Eigen::ComputeFullU | Eigen::ComputeFullV);
     Eigen::Matrix3d const& U = SVD.matrixU();
@@ -138,37 +130,7 @@ void corotated_deformation_gradient_constraint_t::project_wi_SiT_AiT_Bi_pi(
     auto const w         = this->wi();
     scalar_type const V0 = std::abs(V0_);
     auto const weight    = w * V0;
-
-    // Uncomment to use sparse matrix products to compute right hand side
-    /*static sparse_matrix_type Bi(9, 9);
-    if (Bi.nonZeros() == 0)
-    {
-        Bi.insert(0, 0) = scalar_type{1.};
-        Bi.insert(1, 1) = scalar_type{1.};
-        Bi.insert(2, 2) = scalar_type{1.};
-        Bi.insert(3, 3) = scalar_type{1.};
-        Bi.insert(4, 4) = scalar_type{1.};
-        Bi.insert(5, 5) = scalar_type{1.};
-        Bi.insert(6, 6) = scalar_type{1.};
-        Bi.insert(7, 7) = scalar_type{1.};
-        Bi.insert(8, 8) = scalar_type{1.};
-    }
-
-    sparse_matrix_type pi(9, 1);
-    pi.insert(0, 0) = R(0, 0);
-    pi.insert(1, 0) = R(1, 0);
-    pi.insert(2, 0) = R(2, 0);
-    pi.insert(3, 0) = R(0, 1);
-    pi.insert(4, 0) = R(1, 1);
-    pi.insert(5, 0) = R(2, 1);
-    pi.insert(6, 0) = R(0, 2);
-    pi.insert(7, 0) = R(1, 2);
-    pi.insert(8, 0) = R(2, 2);
-
-    sparse_matrix_type const projection = weight * Ai_Si_.transpose() * Bi * pi;
-    for (int k = 0; k < projection.outerSize(); ++k)
-        for (Eigen::SparseMatrix<scalar_type>::InnerIterator it(projection, k); it; ++it)
-            b(it.row()) += it.value();*/
+ 
 
     scalar_type const& p1 = R(0, 0);
     scalar_type const& p2 = R(1, 0);
@@ -241,23 +203,7 @@ corotated_deformation_gradient_constraint_t::get_wi_SiT_AiT_Ai_Si(
     auto const w         = this->wi();
     scalar_type const V0 = std::abs(V0_);
     auto const weight    = w * V0;
-
-    // Uncomment to use sparse matrix product to compute wi (Ai*Si)^T * (Ai*Si)
-    /*sparse_matrix_type const SiT_AiT_Ai_Si = weight * Ai_Si_.transpose() * Ai_Si_;
-
-    std::vector<Eigen::Triplet<scalar_type>> triplets;
-    triplets.reserve(SiT_AiT_Ai_Si.nonZeros());
-
-    for (int k = 0; k < SiT_AiT_Ai_Si.outerSize(); ++k)
-        for (Eigen::SparseMatrix<scalar_type>::InnerIterator it(SiT_AiT_Ai_Si, k); it; ++it)
-            triplets.push_back(
-                {static_cast<int>(it.row()), static_cast<int>(it.col()), it.value()});
-
-    return triplets;*/
-
-    // We symbolically precomputed the product (Ai*Si)^T * (Ai*Si),
-    // so here, we directly compute the non-zero entries of wi * (Ai*Si)^T * (Ai*Si)
-    // without performing sparse matrix products for optimization.
+ 
     auto const& d11 = DmInv_(0, 0);
     auto const& d21 = DmInv_(1, 0);
     auto const& d31 = DmInv_(2, 0);
