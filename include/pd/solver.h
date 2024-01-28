@@ -89,28 +89,28 @@ class solver_t
 
     void step(Eigen::MatrixXd const& fext, int num_iterations = 10)
     {
-        auto const& constraints = model_->constraints();
-        auto& positions         = model_->positions();
-        auto& velocities        = model_->velocity();
-        auto const& mass        = model_->mass();
-        auto const N            = positions.rows();
+        auto const& constraints = model_->constraints(); // std::vector<constraint_t*>, likely 2-3
+        auto& positions         = model_->positions();  // Eigen::MatrixXd, V x 3
+        auto& velocities        = model_->velocity();   // Eigen::MatrixXd, V x 3
+        auto const& mass        = model_->mass();    // Eigen::VectorXd, V x 1
+        auto const N            = positions.rows();     // V
 
         auto const dt      = dt_;
         auto const dt_inv  = scalar_type{1.} / dt_;
         auto const dt2     = dt_ * dt_;
         auto const dt2_inv = scalar_type{1.} / dt2;
         // q_explicit = q(t) + dt*v(t) + dt^2 * M^(-1) * fext(t)
-        Eigen::MatrixX3d const a                   = fext.array().colwise() / mass.array();
-        Eigen::MatrixXd const explicit_integration = positions + dt * velocities + dt2 * a;
+        Eigen::MatrixX3d const a                   = fext.array().colwise() / mass.array(); // size V x 3
+        Eigen::MatrixXd const explicit_integration = positions + dt * velocities + dt2 * a; // size V x 3
 
         // sn = flatten(q_explicit)
         // format of sn is [x1, y1, z1, x2, y2, z2, ..., xn, yn, zn]^T
-        Eigen::VectorXd sn = detail::flatten(explicit_integration);
+        Eigen::VectorXd sn = detail::flatten(explicit_integration); // size 3V x 1
 
         // the matrix-vector product: (M / dt^2) * sn
         Eigen::VectorXd masses;
-        masses.resize(3 * N);
-        for (std::size_t i = 0; i < N; ++i)
+        masses.resize(3 * N);   // size 3V x 1
+        for (std::size_t i = 0; i < N; ++i) // for each vertex, define mass as dt2_inv * M * sni
         {
             Eigen::Matrix3d M;
             M.setZero();
@@ -118,17 +118,17 @@ class solver_t
             M(1, 1) = mass(i);
             M(2, 2) = mass(i);
 
-            auto const sni               = sn.block(3u * i, 0, 3, 1);
+            auto const sni               = sn.block(3u * i, 0, 3, 1); // extract from 3i to 3i+2
             masses.block(3 * i, 0, 3, 1) = dt2_inv * M * sni;
         }
 
         // initial q(t+1)
-        Eigen::VectorXd q = sn;
+        Eigen::VectorXd q = sn; // size 3V x 1
 
         Eigen::VectorXd b;
-        b.resize(3 * N);
+        b.resize(3 * N); // size 3V x 1
 
-        for (int k = 0; k < num_iterations; ++k)
+        for (int k = 0; k < num_iterations; ++k) // minimize the loss by adjusting q (q(t+1)
         {
             // b = (M/dt^2)*sn + sum wi * (Ai*Si)^T * (Ai*Si)
             b.setZero();

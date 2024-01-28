@@ -114,17 +114,17 @@ void deformation_gradient_constraint_t::project_wi_SiT_AiT_Bi_pi(
     Eigen::VectorXd& b) const
 {
     auto const N  = q.rows() / 3;
-    auto const v1 = this->indices().at(0);
+    auto const v1 = this->indices().at(0); // index of vertex 1
     auto const v2 = this->indices().at(1);
     auto const v3 = this->indices().at(2);
     auto const v4 = this->indices().at(3);
 
-    std::size_t const vi = static_cast<std::size_t>(3u) * v1;
+    std::size_t const vi = static_cast<std::size_t>(3u) * v1; // index of vertex 1 in q
     std::size_t const vj = static_cast<std::size_t>(3u) * v2;
     std::size_t const vk = static_cast<std::size_t>(3u) * v3;
     std::size_t const vl = static_cast<std::size_t>(3u) * v4;
 
-    Eigen::Vector3d const q1 = q.block(vi, 0, 3, 1);
+    Eigen::Vector3d const q1 = q.block(vi, 0, 3, 1); // position of vertex 1, from vi to vi+2
     Eigen::Vector3d const q2 = q.block(vj, 0, 3, 1);
     Eigen::Vector3d const q3 = q.block(vk, 0, 3, 1);
     Eigen::Vector3d const q4 = q.block(vl, 0, 3, 1);
@@ -134,7 +134,7 @@ void deformation_gradient_constraint_t::project_wi_SiT_AiT_Bi_pi(
     Ds.col(1) = q2 - q4;
     Ds.col(2) = q3 - q4;
 
-    Eigen::Matrix3d const F = Ds * DmInv_;
+    Eigen::Matrix3d const F = Ds * DmInv_; // size 3 x 3
     // scalar_type const Vol     = (1. / 6.) * Ds.determinant();
     // bool const is_V_positive  = Vol >= scalar_type{0.};
     // bool const is_V0_positive = V0_ >= scalar_type{0.};
@@ -147,15 +147,15 @@ void deformation_gradient_constraint_t::project_wi_SiT_AiT_Bi_pi(
     Eigen::Matrix3d const& U = SVD.matrixU();
     Eigen::Matrix3d const& V = SVD.matrixV();
 
-    Eigen::Matrix3d R = U * V.transpose();
+    Eigen::Matrix3d R = U * V.transpose(); // size 3 x 3
     if (R.determinant() < 0)
     {
         R.col(2) = -R.col(2);
     }
 
     auto const w         = this->wi();
-    scalar_type const V0 = std::abs(V0_);
-    auto const weight    = w * V0;
+    scalar_type const V0 = std::abs(V0_); // initial volume
+    auto const weight    = w * V0; // scalar_type
 
     // Uncomment to use sparse matrix products to compute right hand side
     /*static sparse_matrix_type Bi(9, 9);
@@ -188,7 +188,7 @@ void deformation_gradient_constraint_t::project_wi_SiT_AiT_Bi_pi(
         for (Eigen::SparseMatrix<scalar_type>::InnerIterator it(projection, k); it; ++it)
             b(it.row()) += it.value();*/
 
-    scalar_type const& p1 = R(0, 0);
+    scalar_type const& p1 = R(0, 0); // the goal of PD (i.e p) is the R matrix in corotated linear FEM
     scalar_type const& p2 = R(1, 0);
     scalar_type const& p3 = R(2, 0);
     scalar_type const& p4 = R(0, 1);
