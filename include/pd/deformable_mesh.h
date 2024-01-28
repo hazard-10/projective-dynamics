@@ -94,6 +94,7 @@ class deformable_mesh_t
 
     void immobilize() { v_.setZero(); }
     void tetrahedralize(Eigen::MatrixXd const& V, Eigen::MatrixXi const& F);
+    void set_target_shape();
     void constrain_edge_lengths(scalar_type wi = 1'000'000.);
     void add_positional_constraint(int vi, scalar_type wi = 1'000'000'000.);
     void constrain_deformation_gradient(scalar_type wi = 1'000'000.);

@@ -33,6 +33,39 @@ shape_targeting_constraint_t::shape_targeting_constraint_t(
     DmInv_ = Dm.inverse();
 }
 
+void shape_targeting_constraint_t::set_shape_target(positions_type const& p)
+{
+    auto const v1 = this->indices().at(0);
+    auto const v2 = this->indices().at(1);
+    auto const v3 = this->indices().at(2);
+    auto const v4 = this->indices().at(3);
+
+    Eigen::Vector3d const p1 = p.row(v1).transpose();
+    Eigen::Vector3d const p2 = p.row(v2).transpose();
+    Eigen::Vector3d const p3 = p.row(v3).transpose();
+    Eigen::Vector3d const p4 = p.row(v4).transpose();
+
+    Eigen::Matrix3d Ds;
+    Ds.col(0) = p1 - p4;
+    Ds.col(1) = p2 - p4;
+    Ds.col(2) = p3 - p4;
+
+    scalar_type const Vsigned = (1. / 6.) * Ds.determinant();
+
+    bool const is_V_positive  = Vsigned >= 0.;
+    bool const is_V0_positive = V0_ >= 0.;
+    bool const is_tet_inverted =
+        (is_V_positive && !is_V0_positive) || (!is_V_positive && is_V0_positive);
+
+    Eigen::Matrix3d const F = Ds * DmInv_;
+    // Perform polar decomposition on F to find R and S (F = R * S)
+    Eigen::JacobiSVD<Eigen::Matrix3d> svd(F, Eigen::ComputeFullU | Eigen::ComputeFullV);
+    // get S_
+    // R_ = svd.matrixU() * svd.matrixV().transpose();
+    // shapeTarget = R_.transpose() * F;
+    shapeTarget = svd.matrixU().transpose() * svd.matrixV() * F;
+}
+
 shape_targeting_constraint_t::scalar_type shape_targeting_constraint_t::evaluate(
     positions_type const& p, masses_type const& M)
 {

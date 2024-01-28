@@ -152,6 +152,19 @@ void deformable_mesh_t::constrain_shape_targeting(scalar_type wi)
     }
 }
 
+void deformable_mesh_t::set_target_shape()
+{
+    auto const& positions = this->p0();
+    auto const& elements  = this->elements();
+    for (auto& constraint : this->constraints())
+    {
+        // cast to shape_targeting_constraint_t
+        auto shape_targeting_constraint = dynamic_cast<shape_targeting_constraint_t*>(constraint.get());
+        shape_targeting_constraint->set_shape_target(positions);
+    }
+
+}
+
 
 void deformable_mesh_t::constrain_strain(scalar_type min, scalar_type max, scalar_type wi)
 {
