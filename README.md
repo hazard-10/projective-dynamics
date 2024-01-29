@@ -1,20 +1,29 @@
-# Soft Body Virtual Cutting using Projective Dynamics
-
+# Shape Targeting with Projective Dynamics
 ## Overview
 
-Academic prototyping project for soft body cutting using projective dynamics.
-Different constraint types and cutting methods will be implemented 
-using [Eigen](https://eigen.tuxfamily.org/index.php?title=Main_Page) for matrix computations and [libigl](https://libigl.github.io/) for visualization and 
-user interaction.
+This repo contains an implementatoin of *Shape Targeting: A Versatile Active Elasticity Constitutive Model* [[ paper link]](https://history.siggraph.org/wp-content/uploads/2022/08/2020-Talks-Klar_Shape-Targeting-A-Versatile-Active-Elasticity-Constitutive-Model.pdf) 
+with Projective Dynamics Framework.
 
-### Constraint types
-- **positional**
-- **edge length**
-  ![edge length constrained cloth](./doc/pd-cloth-edge-length.gif)
-- **deformation gradient**
-  ![deformation gradient constrained bar](./doc/pd-bar-deformation-gradient.gif)
-- **strain limiting**
-  ![strain limiting constrained bar](./doc/pd-bar-strain-limiting.gif)
+Main PD framework modified from [Q-Minh's implementation with PD](https://github.com/Q-Minh/projective-dynamics).
+
+### Shape Targeting demo
+For comparison
+-  **without target**
+(i.e St matrix being identity). After turning off gravity, the bar bounces up due to elasticity.
+![no target](./doc/pd-shape-targeting-no-target.gif)
+-  **with target**
+After turning off gravity, bar bends downward.
+![with target](./doc/pd-shape-targeting-with-target.gif)
+
+#### Other Constraint types 
+*from original implementation*
+-  **positional**
+-  **edge length**
+![edge length constrained cloth](./doc/pd-cloth-edge-length.gif)
+-  **deformation gradient**
+![deformation gradient constrained bar](./doc/pd-bar-deformation-gradient.gif)
+-  **strain limiting**
+![strain limiting constrained bar](./doc/pd-bar-strain-limiting.gif)
 
 ## Dependencies
 
@@ -27,7 +36,6 @@ user interaction.
 
 ```
 # Download repository
-$ git clone https://github.com/Q-Minh/projective-dynamics
 $ cd projective-dynamics
 
 # Configure and build project
