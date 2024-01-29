@@ -226,7 +226,7 @@ int main(int argc, char** argv)
         {
             if (ImGui::TreeNode("Constraints"))
             {
-                static std::array<bool, 3u> is_constraint_type_active;
+                static std::array<bool, 5u> is_constraint_type_active;
                 if (ImGui::TreeNode("Edge length##Constraints"))
                 {
                     ImGui::InputFloat(
@@ -271,7 +271,8 @@ int main(int argc, char** argv)
                         100.f, "%.1f");
                     ImGui::Checkbox("Active##ShapeTargeting", &is_constraint_type_active[3]);
                     if (ImGui::Button("Set Shape Target", ImVec2((w - p) / 2.f, 0))) {
-                        // todo: set shape target
+                        if (is_constraint_type_active[3])
+                            model.set_target_shape();
                     }
                     ImGui::TreePop();
                 }

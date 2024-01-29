@@ -63,7 +63,7 @@ void shape_targeting_constraint_t::set_shape_target(positions_type const& p)
     // get S_
     // R_ = svd.matrixU() * svd.matrixV().transpose();
     // shapeTarget = R_.transpose() * F;
-    shapeTarget = svd.matrixU().transpose() * svd.matrixV() * F;
+    shapeTarget = svd.matrixV() * svd.singularValues().asDiagonal() * svd.matrixV().transpose();
 }
 
 shape_targeting_constraint_t::scalar_type shape_targeting_constraint_t::evaluate(
